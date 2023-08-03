@@ -1,13 +1,21 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 func Initialize() {
+
+	// Router Instance
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+
+	// Routes
+
+	initializeRoutes(r)
+	initializeAuthRoutes(r)
+	InitializeProductRoutes(r)
+	InitializeAdminRoutes(r)
+	
+	// Run the server
 	r.Run()
 }
