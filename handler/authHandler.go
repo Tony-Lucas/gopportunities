@@ -16,18 +16,23 @@ type UserClaim struct {
 	ID int
 }
 
+type AdminClaim struct {
+	jwt.StandardClaims
+	ID int
+}
+
 func Auth(c *gin.Context) {
 	var user models.User
-
-	if result := db.Where("email = ?", c.PostForm("email")).First(&user); result.Error != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
+	err := c.Bind(&user)
+	if err != nil {
+		c.JSON(http.StatusAccepted, gin.H{
 			"success": "false",
 			"message": "Usuário não cadastrado",
 		})
 	} else {
 		result := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(c.PostForm("password")))
 		if result != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
+			c.JSON(http.StatusOK, gin.H{
 				"success": "false",
 				"message": "Senha inválida",
 			})
@@ -47,25 +52,38 @@ func Auth(c *gin.Context) {
 			})
 		}
 	}
-
 }
 
 func VerifyAuth(c *gin.Context) {
-	cookie, _ := c.Cookie("token")
+	cookie, err := c.Cookie("token")
 	var userClaim UserClaim
 
-	token, _ := jwt.ParseWithClaims(cookie, &userClaim, func(t *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
-	})
-
-	if token.Valid {
-		c.JSON(200, gin.H{
-			"success": "true",
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": "false",
+			"message": "Token não encontrado",
 		})
 	} else {
-		c.JSON(200, gin.H{
-			"success": "false",
+		token, err := jwt.ParseWithClaims(cookie, &userClaim, func(t *jwt.Token) (interface{}, error) {
+			return []byte(os.Getenv("JWT_SECRET_KEY")), nil
 		})
+
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": "false",
+				"message": err,
+			})
+		} else {
+			if token.Valid {
+				c.JSON(200, gin.H{
+					"success": "true",
+				})
+			} else {
+				c.JSON(200, gin.H{
+					"success": "false",
+				})
+			}
+		}
 	}
 
 }

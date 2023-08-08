@@ -22,34 +22,45 @@ type User struct {
 type Admin struct {
 	ID        uint   `gorm:"primaryKey" json:"id" form:"id"`
 	Name      string `gorm:"not null" json:"name"`
-	Username  string `gorm:"not null;unique" json:"username"`
-	Password  string `gorm:"not null" json:"password"`
+	Username  string `gorm:"not null;unique" json:"username" form:"username"`
+	Password  string `gorm:"not null" json:"password" form:"password"`
 	DeletedAt gorm.DeletedAt
 	CreatedAt time.Time `form:"createdAt" json:"createdAt" gorm:"not null"`
 	UpdatedAt time.Time `form:"updatedAt" json:"updatedAt" gorm:"not null"`
 }
 
 type Product struct {
-	gorm.Model
-	Name           string `json:"name" binding:"required" gorm:"not null"`
-	PriceWholesale string `json:"priceWholesale" binding:"required" gorm:"not null"`
-	PriceRetail    string `json:"priceRetail" binding:"required" gorm:"not null"`
+	ID             uint   `gorm:"primaryKey" json:"id" form:"id"`
+	Name           string `json:"name" gorm:"not null" form:"name"`
+	PriceWholesale string `json:"priceWholesale" gorm:"not null" form:"priceWholesale"`
+	PriceRetail    string `json:"priceRetail" gorm:"not null" form:"priceRetail"`
+	ImgName        string `json:"imgName" form:"imgName"`
+	ImgUrl         string `json:"imgUrl" form:"imgUrl"`
+	DeletedAt      gorm.DeletedAt
+	CreatedAt      time.Time `form:"createdAt" json:"createdAt" gorm:"not null"`
+	UpdatedAt      time.Time `form:"updatedAt" json:"updatedAt" gorm:"not null"`
 }
 
 type DeliverAdress struct {
-	gorm.Model
-	UserID        uint
-	ZipCode       uint   `json:"zipCode" binding:"required" gorm:"not null"`
-	StreetAddress string `json:"streetAdress" binding:"required" gorm:"not null"`
-	Complement    string `json:"complement" binding:"required"`
-	Area          string `json:"area" binding:"required" gorm:"not null"`
-	City          string `json:"city" binding:"required" gorm:"not null"`
-	State         string `json:"state" binding:"required" gorm:"not null"`
-	HouseNumber   uint16 `json:"houseNumber" binding:"required" gorm:"not null"`
+	ID            uint   `gorm:"primaryKey" json:"id" form:"id"`
+	UserID        uint   `json:"userId" gorm:"not null" form:"userId"`
+	ZipCode       uint   `json:"zipCode" gorm:"not null" form:"zipCode"`
+	StreetAddress string `json:"streetAdress" gorm:"not null" form:"streetAdress"`
+	Complement    string `json:"complement" form:"complement" `
+	Area          string `json:"area"  gorm:"not null" form:"area"`
+	City          string `json:"city"  gorm:"not null" form:"city"`
+	State         string `json:"state"  gorm:"not null" form:"state"`
+	HouseNumber   uint16 `json:"houseNumber" gorm:"not null" form:"houseNumber"`
+	DeletedAt     gorm.DeletedAt
+	CreatedAt     time.Time `form:"createdAt" json:"createdAt" gorm:"not null"`
+	UpdatedAt     time.Time `form:"updatedAt" json:"updatedAt" gorm:"not null"`
 }
 
 type Contact struct {
-	gorm.Model
-	PhoneNumber string `json:"phoneNumber" binding:"required,phoneNumber" gorm:"not null"`
-	UserId      uint   `json:"userId" binding:"required,userId" gorm:"not null"`
+	ID          uint   `gorm:"primaryKey" json:"id" form:"id"`
+	PhoneNumber string `json:"phoneNumber" gorm:"not null" form:"phoneNumber"`
+	UserId      uint   `json:"userId" gorm:"not null" form:"userId"`
+	DeletedAt   gorm.DeletedAt
+	CreatedAt   time.Time `form:"createdAt" json:"createdAt" gorm:"not null"`
+	UpdatedAt   time.Time `form:"updatedAt" json:"updatedAt" gorm:"not null"`
 }
