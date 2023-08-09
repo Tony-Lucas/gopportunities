@@ -23,35 +23,67 @@ type AdminClaim struct {
 
 func Auth(c *gin.Context) {
 	var user models.User
-	err := c.Bind(&user)
-	if err != nil {
-		c.JSON(http.StatusAccepted, gin.H{
-			"success": "false",
-			"message": "Usuário não cadastrado",
-		})
-	} else {
-		result := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(c.PostForm("password")))
-		if result != nil {
-			c.JSON(http.StatusOK, gin.H{
+	var admin models.Admin
+	if c.PostForm("username") != "" {
+		if result := db.Where("username = ?", c.PostForm("username")).First(&admin); result.Error != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
 				"success": "false",
-				"message": "Senha inválida",
+				"message": "Usuário não cadastrado",
 			})
 		} else {
-			token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaim{
-				StandardClaims: jwt.StandardClaims{},
-				ID:             int(user.ID),
-			})
+			result := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(c.PostForm("password")))
+			if result != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"success": "false",
+					"message": "Senha inválida",
+				})
+			} else {
+				token := jwt.NewWithClaims(jwt.SigningMethodHS256, AdminClaim{
+					StandardClaims: jwt.StandardClaims{},
+					ID:             int(admin.ID),
+				})
 
-			jwtToken, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
-			if err != nil {
-				log.Fatal(err)
+				jwtToken, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY_ADMIN")))
+				if err != nil {
+					log.Fatal(err)
+				}
+				c.SetCookie("token", jwtToken, 3600, "/", "localhost", false, true)
+				c.JSON(200, gin.H{
+					"success": "true",
+				})
 			}
-			c.SetCookie("token", jwtToken, 3600, "/", "localhost", false, true)
-			c.JSON(200, gin.H{
-				"success": "true",
+		}
+	} else {
+		if result := db.Where("email = ?", c.PostForm("email")).First(&user); result.Error != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": "false",
+				"message": "Usuário não cadastrado",
 			})
+		} else {
+			result := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(c.PostForm("password")))
+			if result != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"success": "false",
+					"message": "Senha inválida",
+				})
+			} else {
+				token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaim{
+					StandardClaims: jwt.StandardClaims{},
+					ID:             int(user.ID),
+				})
+
+				jwtToken, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
+				if err != nil {
+					log.Fatal(err)
+				}
+				c.SetCookie("token", jwtToken, 3600, "/", "localhost", false, true)
+				c.JSON(200, gin.H{
+					"success": "true",
+				})
+			}
 		}
 	}
+
 }
 
 func VerifyAuth(c *gin.Context) {
