@@ -76,7 +76,7 @@ func Auth(c *gin.Context) {
 				if err != nil {
 					log.Fatal(err)
 				}
-				c.SetCookie("token", jwtToken, 3600, "/", "localhost", false, true)
+				c.SetCookie("token", jwtToken, 3600, "/", "gopportunities-production-8428.up.railway.app", true, true)
 				c.JSON(200, gin.H{
 					"success": "true",
 				})
