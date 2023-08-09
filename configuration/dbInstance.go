@@ -23,7 +23,7 @@ func DbSingleInstance() *single {
 		defer lock.Unlock()
 		if singleInstance == nil {
 
-			dsn := os.Getenv("URL_DB")
+			dsn := string(os.Getenv("URL_DB"))
 			db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 			if err != nil {
 				panic(err)
