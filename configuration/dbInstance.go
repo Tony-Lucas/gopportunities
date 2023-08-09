@@ -21,7 +21,8 @@ func DbSingleInstance() *single {
 		lock.Lock()
 		defer lock.Unlock()
 		if singleInstance == nil {
-			dsn := "root:55425610a@tcp(127.0.0.1:3306)/store-api?charset=utf8mb4&parseTime=True&loc=Local"
+
+			dsn := "mysql://root:R4snz8BZumtAbENQ0STj@containers-us-west-155.railway.app:7867/railway"
 			db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 			if err != nil {
 				panic(err)
