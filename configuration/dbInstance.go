@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"os"
 	"sync"
 
 	"github.com/Tony-Lucas/gopportunities/models"
@@ -22,7 +23,7 @@ func DbSingleInstance() *single {
 		defer lock.Unlock()
 		if singleInstance == nil {
 
-			dsn := "root:R4snz8BZumtAbENQ0STj@tcp(containers-us-west-155.railway.app:7867)/railway?charset=utf8mb4&parseTime=True&loc=Local"
+			dsn := os.Getenv("URL_DB")
 			db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 			if err != nil {
 				panic(err)
