@@ -53,7 +53,7 @@ func Auth(c *gin.Context) {
 				})
 			}
 		}
-	} else {
+	} else if c.PostForm("email") != "" {
 		if result := db.Where("email = ?", c.PostForm("email")).First(&user); result.Error != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"success": "false",
