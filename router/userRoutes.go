@@ -7,7 +7,7 @@ import (
 )
 
 func initializeRoutes(r *gin.Engine) {
-	v1 := r.Group("/")
+	v1 := r.Group("/user")
 
 	{
 		v1.GET("/:id", handler.GetUser)

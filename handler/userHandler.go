@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/Tony-Lucas/gopportunities/configuration"
@@ -40,12 +38,14 @@ func CreateUser(c *gin.Context) {
 	// Create User db
 
 	if err := db.Create(&user).Error; err != nil {
-		fmt.Println()
+		panic(err)
 	}
 
 	// Initializing a variable with contact request data
-	json, _ := json.Marshal(user)
-	c.JSON(200, json)
+	c.JSON(200, gin.H{
+		"success": true,
+		"user":    user,
+	})
 }
 
 func UpdateUser(c *gin.Context) {
